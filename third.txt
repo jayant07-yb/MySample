@@ -1,0 +1,22 @@
+{
+    "connections": [
+        {
+            "db_oid": 16385,
+            "db_name": "db1",
+            "query": "select count(*) from test_table ;",
+            "process_start_time": "2022-06-15 13:47:21.742142+00",
+            "query_start_time": "2022-06-15 13:48:28.945501+00",
+            "application_name": "ysqlsh",
+            "backend_type": "client backend",
+            "backend_status": "idle",
+            "host": "10.160.1.234",
+            "port": "50743"
+        },
+        {
+            "process_start_time": "2022-06-13 14:25:05.400373+00",
+            "application_name": "",
+            "backend_type": "checkpointer",
+            "backend_status": ""
+        }
+    ]
+}
