@@ -33,7 +33,7 @@ public class PerfTest{
     public static String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
     public static String username = "yugabyte"; //Username
     private static String password = "yugabyte"; //Password
-    public static TESTCASE testCase = TESTCASE.READ    ;         //What is to be tested (SEE TESTCASE ENUM)
+    public static TESTCASE testCase = TESTCASE.WRITE    ;         //What is to be tested (SEE TESTCASE ENUM)
     public static int numberOfThreads = 30   ; //Number of parallel threads that will run the test
     public static int commitFrequency = 10    ; //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
     public static int loopSize = 100  ;         //Any thread will execute how many queries
@@ -178,8 +178,8 @@ public class PerfTest{
 
         //Run the test objects
         Thread threads[] = new Thread[numberOfThreads];
-        for(int i =0;i<numberOfThreads;i++)
-            threads[i] =  new Thread((Runnable) test_obj[i]);
+        for(int threadID =0;threadID<numberOfThreads;threadID++)
+            threads[threadID] =  new Thread((Runnable) test_obj[threadID]);
 
         System.out.println("Starting tests");
         try {
