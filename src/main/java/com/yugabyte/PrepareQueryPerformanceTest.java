@@ -123,7 +123,7 @@ class TestObject6 {
   /*  Test Function */
   public boolean TestExtendedQuery()
   {
-    long start = System.currentTimeMillis() ;
+
 
     PreparedStatement ppstmtSelect  = null ;
     PreparedStatement ppstmtInsert  = null ;
@@ -156,6 +156,8 @@ class TestObject6 {
     Random rand = new Random();
     int times = loopSize-1;
   //  int lastInsert = 0;
+      int select_query_output_count =0;
+      long start = System.currentTimeMillis() ;
     while(times> 0)
     {
       times--;
@@ -175,7 +177,13 @@ class TestObject6 {
         break;
         case 0:
         ppstmtSelect.setInt(1,val-loopSize);
-        ResultSet rs2 = ppstmtSelect.executeQuery();        
+        ResultSet rs2 = ppstmtSelect.executeQuery();        //consume results
+
+            while(rs2.next())
+            {
+                select_query_output_count++;
+            }
+
         default:
             break;
     }
@@ -186,6 +194,8 @@ class TestObject6 {
     }
 
     }
+
+
     try{
     conn.close();
     }

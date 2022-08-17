@@ -4,6 +4,8 @@ mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryP
 mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryPerformanceTest  -Dexec.args="900"
 mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryPerformanceTest  -Dexec.args="1000"
 
+mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest  -Dexec.args="help"
+
 #mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryPerformanceTest  -Dexec.args="200"
 #mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryPerformanceTest  -Dexec.args="250"
 #mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PrepareQueryPerformanceTest  -Dexec.args="300"
