@@ -30,13 +30,13 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
-    public static String username = "yugabyte"; //Username
-    private static String password = "yugabyte"; //Password
-    public static TESTCASE testCase = TESTCASE.WRITE    ;         //What is to be tested (SEE TESTCASE ENUM)
-    public static int numberOfThreads = 30   ; //Number of parallel threads that will run the test
+    public static   String connection_url = "jdbc:postgresql://10.150.2.81:5433/yugabyte";  //Connection URL
+    public static   String username = "yugabyte"; //Username
+    private static  String password = "yugabyte"; //Password
+    public static   TESTCASE testCase = TESTCASE.WRITE    ;         //What is to be tested (SEE TESTCASE ENUM)
+    public static int numberOfThreads = 10   ; //Number of parallel threads that will run the test
     public static int commitFrequency = 10    ; //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
-    public static int loopSize = 100  ;         //Any thread will execute how many queries
+    public static int loopSize = 10  ;         //Any thread will execute how many queries
 
     public static void reset_db(){
         try{
@@ -120,8 +120,7 @@ public class PerfTest{
                     loopSize = Integer.parseInt(input);
                     break;
                 default:
-                    System.out.println("Too many input parameters");
-                    break;
+                    throw new IllegalStateException("Unexpected value: " + testCase);
             }
         }
 
@@ -134,12 +133,12 @@ public class PerfTest{
     {
         System.out.println(
                     "Test parameters\n" +
-                    "Connection_url-    "   +    connection_url + "\n" +
-                    "Username-          "   +    username +  "\n" +
-                    "Test case-         "   +    testCase +  "\n" +
-                    "Number of threads- "   +    numberOfThreads +   "\n" +
-                    "Commit frequency-  "   +    commitFrequency +   "\n" +
-                    "Loop Size-         "   +    loopSize +  "\n"
+                    "Connection_url     "   +    connection_url + "\n" +
+                    "Username           "   +    username +  "\n" +
+                    "Test case          "   +    testCase +  "\n" +
+                    "Number of threads  "   +    numberOfThreads +   "\n" +
+                    "Commit frequency   "   +    commitFrequency +   "\n" +
+                    "Loop Size          "   +    loopSize +  "\n"
         );
 
         System.out.println(
@@ -163,15 +162,15 @@ public class PerfTest{
             case READ :
                 for(int threadNumber = 0; threadNumber<numberOfThreads; threadNumber++)
                 {
-                        test_obj[threadNumber] =  new ReadTest( threadNumber, connection_url, username,  password);
+                        test_obj[threadNumber] =  new ReadTest( threadNumber, connection_url, username,  password , loopSize , commitFrequency);
                 }
                 break;
             case WRITE:
                 for(int threadNumber = 0; threadNumber<numberOfThreads; threadNumber++)
                 {
-                    test_obj[threadNumber] =  new WriteTest( threadNumber, connection_url, username,  password);
+                    test_obj[threadNumber] =  new WriteTest( threadNumber, connection_url, username,  password , loopSize , commitFrequency);
                 }
-
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + testCase);
         }
@@ -217,20 +216,15 @@ abstract class TestStructure {
     public volatile Connection conn = null ;
     public volatile int commit_frequency;
 
-    /* Test function */
-    public abstract long TestExtendedQuery();
-    /*  Extended Statement Parameters */
-    public volatile int index;
-    public volatile String InsertStatementQueryFormat = "INSERT INTO public.test_table VALUES (?, 'Prepared_Statement', %d )" ; //INSERT
-    public volatile String SelectStatementQueryFormat = "Select * from public.test_table  where id = ?" ;               //SELECT
-
-    TestStructure(int index, String connection_url, String username, String password) {
+    public TestStructure(int index, String connection_url, String username, String password, int loopSize, int commitFrequency) {
         this.index = index;
         this.connection_url = connection_url;
+        this.loopSize = loopSize ;
+        this.commit_frequency = commitFrequency;
 
         try{
             this.conn = DriverManager.getConnection(this.connection_url,username, password);
-            if(commit_frequency == 0 )
+            if(commit_frequency <= 1 )
                 conn.setAutoCommit(true);
             else
                 conn.setAutoCommit(false);
@@ -240,12 +234,20 @@ abstract class TestStructure {
             e.printStackTrace();
         }
     }
+
+    /* Test function */
+    public abstract long TestExtendedQuery();
+    /*  Extended Statement Parameters */
+    public volatile int index;
+    public volatile String InsertStatementQueryFormat = "INSERT INTO public.test_table VALUES (?, 'Prepared_Statement', %d )" ; //INSERT
+    public volatile String SelectStatementQueryFormat = "Select * from public.test_table  where id = ?" ;               //SELECT
+
 }
 
 class ReadTest extends TestStructure implements  Runnable{
 
-    ReadTest(int index, String connection_url, String username, String password) {
-        super(index, connection_url, username, password);
+    public ReadTest(int threadNumber, String connection_url, String username, String password, int loopSize, int commitFrequency) {
+        super(threadNumber, connection_url,username, password,loopSize,commitFrequency);
     }
 
     /*  Test Function */
@@ -332,8 +334,10 @@ class ReadTest extends TestStructure implements  Runnable{
 
 class WriteTest extends TestStructure implements  Runnable{
 
-    WriteTest(int index, String connection_url, String username, String password) {
-        super(index, connection_url, username, password);
+
+
+    public WriteTest(int threadNumber, String connection_url, String username, String password, int loopSize, int commitFrequency) {
+        super(threadNumber, connection_url, username, password, loopSize, commitFrequency);
     }
 
     /*  Test Function */
@@ -345,7 +349,7 @@ class WriteTest extends TestStructure implements  Runnable{
 
         /*  Prepare the prepareStatements */
         try{
-            preparedStatement_Insert =conn.prepareStatement(this.SelectStatementQueryFormat);
+            preparedStatement_Insert =conn.prepareStatement(String.format(this.InsertStatementQueryFormat, index));
         }catch(Exception e)
         {
             e.printStackTrace();
@@ -364,16 +368,15 @@ class WriteTest extends TestStructure implements  Runnable{
         long NumberOfRowsInReadQueryOutput =0;
         for(int times=0;times<loopSize;times++)
         {
-            int SelectIndex = times ;
+            long insertID  = times + index*(loopSize+1);
             try{
-                preparedStatement_Insert.setInt(1,SelectIndex);
+                preparedStatement_Insert.setLong(1,insertID);
                 preparedStatement_Insert.executeUpdate();
             }catch(Exception e)
             {
                 e.printStackTrace();
                 System.exit(1);
             }
-
 
             if(this.commit_frequency >  1 && times%commit_frequency==0)
             {
@@ -401,6 +404,7 @@ class WriteTest extends TestStructure implements  Runnable{
         catch(Exception e)
         {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         long end = System.currentTimeMillis() ;
         this.timeTaken = end - start ;
