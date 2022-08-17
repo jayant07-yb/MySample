@@ -10,17 +10,10 @@
   <name>MySample</name>
   <url>http://maven.apache.org</url>
   <properties>
-
-    <picocli.version>4.1.4</picocli.version>
-    <picocli-jansi-graalvm.version>1.1.0</picocli-jansi-graalvm.version>
-
-    <jansi.version>1.18</jansi.version>
-    <junit.version>5.5.2</junit.version>
-
-
-    <maven.compiler.source>1.8</maven.compiler.source>
+  <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
+
 
   <dependencies>
     <dependency>

@@ -1,7 +1,5 @@
 package com.yugabyte;
 
-
-//  Regarding sql
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -33,10 +31,10 @@ public class PerfTest{
     public static   String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
-    public static   TESTCASE testCase = TESTCASE.WRITE    ;         //What is to be tested (SEE TESTCASE ENUM)
-    public static int numberOfThreads = 10   ; //Number of parallel threads that will run the test
-    public static int commitFrequency = 10    ; //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
-    public static int loopSize = 10  ;         //Any thread will execute how many queries
+    public static   TESTCASE testCase = TESTCASE.WRITE    ; //What is to be tested (SEE TESTCASE ENUM)
+    public static int numberOfThreads = 10   ;  //Number of parallel threads that will run the test
+    public static int commitFrequency = 10   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
+    public static int loopSize = 10  ;          //Any thread will execute how many queries
 
     public static void reset_db(){
         try{
@@ -87,7 +85,7 @@ public class PerfTest{
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException  {
 
-    /*  Check for help  */
+    /*  Check for help keyword */
         if(args.length != 0 &&  helpKeyword.equals(args[0].toUpperCase()) )
         {
             print_help();
@@ -98,7 +96,7 @@ public class PerfTest{
         int currentInput = 0;
         for(String input:args)
         {
-            switch (INPUT.valueOf(String.valueOf(currentInput)) )
+            switch (INPUT.values()[ currentInput])
             {
                 case CONNECTION_URL:
                     connection_url = input ;
@@ -108,6 +106,7 @@ public class PerfTest{
                     break;
                 case PASSWORD:
                     password = input;
+                    break;
                 case TEST_CASE:
                     testCase = TESTCASE.valueOf(input.toUpperCase()) ; //Must be in the format "READ" or "WRITE"
                     break;
@@ -123,6 +122,7 @@ public class PerfTest{
                 default:
                     throw new IllegalStateException("Unexpected value: " + testCase);
             }
+            currentInput++;
         }
 
         test(testCase,numberOfThreads,commitFrequency,loopSize);
@@ -162,7 +162,7 @@ public class PerfTest{
             case READ :
                 for(int threadNumber = 0; threadNumber<numberOfThreads; threadNumber++)
                 {
-                        test_obj[threadNumber] =  new ReadTest( threadNumber, connection_url, username,  password , loopSize , commitFrequency);
+                    test_obj[threadNumber] =  new ReadTest( threadNumber, connection_url, username,  password , loopSize , commitFrequency);
                 }
                 break;
             case WRITE:
