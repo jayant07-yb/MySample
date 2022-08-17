@@ -30,7 +30,7 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static   String connection_url = "jdbc:postgresql://10.150.2.81:5433/yugabyte";  //Connection URL
+    public static   String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
     public static   TESTCASE testCase = TESTCASE.WRITE    ;         //What is to be tested (SEE TESTCASE ENUM)
@@ -51,7 +51,8 @@ public class PerfTest{
             Connection conn = DriverManager.getConnection(connection_url,username, password);
             Statement stmt = conn.createStatement();
 
-            stmt.execute("DROP TABLE IF EXISTS public.test_table");
+            if(testCase != TESTCASE.READ)
+                stmt.execute("DROP TABLE IF EXISTS public.test_table");
 
             stmt.execute("CREATE TABLE IF NOT EXISTS public.test_table" +
                     "  (id decimal primary key, test_name varchar, thread_id int )");
@@ -126,7 +127,6 @@ public class PerfTest{
 
         test(testCase,numberOfThreads,commitFrequency,loopSize);
         print_results();
-        System.out.printf("Time take by %d number of connections :: %d\n",numberOfThreads, averageQueryTime);
     }
 
     public static void print_results()
@@ -190,18 +190,26 @@ public class PerfTest{
                 threads[i].join();
             long end = System.currentTimeMillis() ;
             totalTestTime =  (end - start) ;
-
+            long totalrowsprinted=0;
             long newTimeTaken = 0 ;
-            for(int i=0;i<numberOfThreads;i++)
-                newTimeTaken = newTimeTaken + (test_obj[i].timeTaken );
+            for(int i=0;i<numberOfThreads;i++) {
+                newTimeTaken = newTimeTaken + (test_obj[i].timeTaken);
+                if(testCase == TESTCASE.READ)
+                    totalrowsprinted = totalrowsprinted + test_obj[i].NumberOfRowsInReadQueryOutput ;
+
+            }
             System.out.println("Total Query Time:" + newTimeTaken);
             averageQueryTime = newTimeTaken/(loopSize*numberOfThreads);
+            if(testCase == TESTCASE.READ)
+                System.out.println("Total rows read " + totalrowsprinted);
 
         }catch(Exception e)
         {
             e.printStackTrace();
             System.exit(1);
         }
+
+
     }
 
 }
@@ -240,8 +248,9 @@ abstract class TestStructure {
     /*  Extended Statement Parameters */
     public volatile int index;
     public volatile String InsertStatementQueryFormat = "INSERT INTO public.test_table VALUES (?, 'Prepared_Statement', %d )" ; //INSERT
-    public volatile String SelectStatementQueryFormat = "Select * from public.test_table  where id = ?" ;               //SELECT
+    public volatile String SelectStatementQueryFormat = "Select * from public.test_table  where thread_id = ? LIMIT 10" ;               //SELECT
 
+    public long NumberOfRowsInReadQueryOutput ; //Only for Read test
 }
 
 class ReadTest extends TestStructure implements  Runnable{
@@ -275,10 +284,10 @@ class ReadTest extends TestStructure implements  Runnable{
             }
         }
 
-        long NumberOfRowsInReadQueryOutput =0;
+        NumberOfRowsInReadQueryOutput =0;
         for(int times=0;times<loopSize;times++)
         {
-            int SelectIndex = times ;
+            int SelectIndex = index ;
             try{
                 preparedStatement_Select.setInt(1,SelectIndex);
                 ResultSet rs2 = preparedStatement_Select.executeQuery();
@@ -292,7 +301,6 @@ class ReadTest extends TestStructure implements  Runnable{
                 System.exit(1);
             }
 
-
             if(this.commit_frequency >  1 && times%commit_frequency==0)
             {
                 try {
@@ -303,7 +311,6 @@ class ReadTest extends TestStructure implements  Runnable{
             }
 
         }
-
 
         if(this.commit_frequency >  1 )
         {
