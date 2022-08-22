@@ -32,7 +32,7 @@ for testname in $Tests
 do
   for numberThreads in $NumberOfThreads
     do
-      mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="OdysseyConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
+      mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="$OdysseyConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
    echo "---------------------------------------------------"
   done
 done
