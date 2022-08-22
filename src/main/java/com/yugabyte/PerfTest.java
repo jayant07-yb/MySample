@@ -28,12 +28,12 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static   String connection_url = "jdbc:postgresql://10.150.1.213:6432/yugabyte";  //Connection URL
+    public static   String connection_url = "jdbc:postgresql://10.150.1.213:6432/postgres";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
-    public static   TESTCASE testCase = TESTCASE.WRITE    ; //What is to be tested (SEE TESTCASE ENUM)
+    public static   TESTCASE testCase = TESTCASE.READ    ; //What is to be tested (SEE TESTCASE ENUM)
     public static int numberOfThreads = 10   ;  //Number of parallel threads that will run the test
-    public static int commitFrequency = 10   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
+    public static int commitFrequency = 2   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
     public static int loopSize = 1000  ;          //Any thread will execute how many queries
 
     public static void reset_db(){

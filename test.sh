@@ -1,6 +1,7 @@
 #! /bin/sh
 mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="help"
 
+#mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="jdbc:postgresql://10.150.4.254:5400/yugabyte yugabyte yugabyte WRITE 100"
 PgBouncerConnectionURL="jdbc:postgresql://10.150.4.254:5400/yugabyte"
 OdysseyConnectionURL="jdbc:postgresql://10.150.1.213:6432/yugabyte"
 
@@ -31,7 +32,7 @@ for testname in $Tests
 do
   for numberThreads in $NumberOfThreads
     do
-      mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="$OdysseyConnectionURL $username $password $testname $numberThreads $CommitFrequency $LoopSize"
+      mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="OdysseyConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
    echo "---------------------------------------------------"
   done
 done
