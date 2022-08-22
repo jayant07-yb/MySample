@@ -28,7 +28,7 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static   String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
+    public static   String connection_url = "jdbc:postgresql://10.150.1.213:6432/yugabyte";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
     public static   TESTCASE testCase = TESTCASE.WRITE    ; //What is to be tested (SEE TESTCASE ENUM)
