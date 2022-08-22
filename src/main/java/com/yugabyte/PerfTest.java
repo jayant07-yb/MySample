@@ -34,7 +34,7 @@ public class PerfTest{
     public static   TESTCASE testCase = TESTCASE.WRITE    ; //What is to be tested (SEE TESTCASE ENUM)
     public static int numberOfThreads = 10   ;  //Number of parallel threads that will run the test
     public static int commitFrequency = 10   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
-    public static int loopSize = 10  ;          //Any thread will execute how many queries
+    public static int loopSize = 1000  ;          //Any thread will execute how many queries
 
     public static void reset_db(){
         try{
@@ -78,6 +78,7 @@ public class PerfTest{
                 "    LOOP_SIZE              -- Number of queries executed by each thread."
         );
     }
+
 
     /* Output Statistics */
     public static long averageQueryTime;
@@ -174,6 +175,7 @@ public class PerfTest{
             default:
                 throw new IllegalStateException("Unexpected value: " + testCase);
         }
+        System.out.println("Objects created tests");
 
         //Run the test objects
         Thread threads[] = new Thread[numberOfThreads];
@@ -234,9 +236,10 @@ abstract class TestStructure {
             this.conn = DriverManager.getConnection(this.connection_url,username, password);
             if(commit_frequency <= 1 )
                 conn.setAutoCommit(true);
-            else
+            else {
                 conn.setAutoCommit(false);
-
+                conn.commit();
+            }
         }catch(Exception e)
         {
             e.printStackTrace();
@@ -423,3 +426,4 @@ class WriteTest extends TestStructure implements  Runnable{
         TestExtendedQuery();
     }
 }
+
