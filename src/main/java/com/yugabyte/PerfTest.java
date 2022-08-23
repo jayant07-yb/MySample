@@ -9,7 +9,10 @@ import java.sql.PreparedStatement;
 
 enum TESTCASE{
     READ,
-    WRITE
+    WRITE,
+    PARSE_ERROR,
+    LATENCY,
+
 }
 
 enum INPUT{
