@@ -238,7 +238,7 @@ abstract class TestStructure {
 
         try{
             Properties props = new Properties();
-            props.setProperty("idle_in_transaction_session_timeout" , "0");
+            //props.setProperty("idle_in_transaction_session_timeout" , "0");
             props.setProperty("password",password);
             props.setProperty("username",username);
 
