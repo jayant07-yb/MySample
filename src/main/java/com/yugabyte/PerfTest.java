@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.util.Properties;
 
 enum TESTCASE{
     READ,
@@ -236,13 +237,19 @@ abstract class TestStructure {
         this.commit_frequency = commitFrequency;
 
         try{
-            this.conn = DriverManager.getConnection(this.connection_url,username, password);
+            Properties props = new Properties();
+            props.setProperty("idle_in_transaction_session_timeout" , "0");
+            props.setProperty("password",password);
+            props.setProperty("username",username);
+
+            this.conn = DriverManager.getConnection(this.connection_url,props);
             if(commit_frequency <= 1 )
                 conn.setAutoCommit(true);
             else {
                 conn.setAutoCommit(false);
                 conn.commit();
             }
+
         }catch(Exception e)
         {
             e.printStackTrace();

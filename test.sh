@@ -7,7 +7,7 @@ PgBouncerConnectionURL="jdbc:postgresql://10.150.4.254:5400/yugabyte"
 OdysseyConnectionURL="jdbc:postgresql://10.150.1.213:6432/yugabyte"
 YUGABYTEConnectionURL="jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte"
 
-NumberOfThreads="1 5 10 50 100 300 500 700 1000"
+NumberOfThreads="1 5 10 50 100 200 300 400 500 600 700 800 900 1000"
 Tests="WRITE READ"
 CommitFrequency=10
 LoopSize=500

@@ -1,0 +1,199 @@
+[jayantanand@dev-server-janand-client-testing MySample]$ ./test.sh
+[debug] execute contextualize
+[debug] execute contextualize
+PerfTest can be used to test the performance of the read and write queries.
+Usage::
+Input argument to be provided in the sequence::
+    CONNECTION_URL         -- The connection url that the test application will use for testing.
+    username               -- The username that the test application will use for testing.
+    PASSWORD               -- The password that the test application will use for testing.
+    TEST_CASE              -- The type of the test :: "READ" or "WRITE".
+    NUMBER_OF_THREADS      -- Number of threads used by the application while testing.
+    COMMIT_FREQUENCY       -- Commit will be called after executing how many queries;
+                              Can't be 0;
+                              1 to set autocommit=true
+    LOOP_SIZE              -- Number of queries executed by each thread.
+--------------------Testing for PgBouncer------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:935
+Test parameters
+Connection_url     jdbc:postgresql://10.150.4.254:5400/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  1
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 1
+Total Test Time    935
+
+--------------------Testing for Yugabyte------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:904
+Test parameters
+Connection_url     jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  1
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 1
+Total Test Time    904
+
+---------------------------------------------------
+--------------------Testing for PgBouncer------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:12329
+Test parameters
+Connection_url     jdbc:postgresql://10.150.4.254:5400/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  5
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 4
+Total Test Time    2541
+
+--------------------Testing for Yugabyte------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:9770
+Test parameters
+Connection_url     jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  5
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 3
+Total Test Time    1986
+
+---------------------------------------------------
+--------------------Testing for PgBouncer------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:41779
+Test parameters
+Connection_url     jdbc:postgresql://10.150.4.254:5400/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  10
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 8
+Total Test Time    4241
+
+--------------------Testing for Yugabyte------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:31861
+Test parameters
+Connection_url     jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  10
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 6
+Total Test Time    3247
+
+---------------------------------------------------
+--------------------Testing for PgBouncer------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:865078
+Test parameters
+Connection_url     jdbc:postgresql://10.150.4.254:5400/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  50
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 34
+Total Test Time    17832
+
+--------------------Testing for Yugabyte------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:635235
+Test parameters
+Connection_url     jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  50
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 25
+Total Test Time    12937
+
+---------------------------------------------------
+--------------------Testing for PgBouncer------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:2525502
+Test parameters
+Connection_url     jdbc:postgresql://10.150.4.254:5400/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  100
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 50
+Total Test Time    25574
+
+--------------------Testing for Yugabyte------------------
+[debug] execute contextualize
+[debug] execute contextualize
+Objects created tests
+Starting tests
+Total Query Time:2649866
+Test parameters
+Connection_url     jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte
+Username           yugabyte
+Test case          WRITE
+Number of threads  100
+Commit frequency   10
+Loop Size          500
+
+Test Result
+Average Query Time 52
+Total Test Time    26980
+
