@@ -237,12 +237,7 @@ abstract class TestStructure {
         this.commit_frequency = commitFrequency;
 
         try{
-            Properties props = new Properties();
-            //props.setProperty("idle_in_transaction_session_timeout" , "0");
-            props.setProperty("password",password);
-            props.setProperty("username",username);
-
-            this.conn = DriverManager.getConnection(this.connection_url,props);
+            this.conn = DriverManager.getConnection(this.connection_url,username,password);
             if(commit_frequency <= 1 )
                 conn.setAutoCommit(true);
             else {
