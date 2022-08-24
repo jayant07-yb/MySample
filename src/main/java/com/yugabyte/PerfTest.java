@@ -31,10 +31,10 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static   String connection_url = "jdbc:postgresql://10.150.1.213:6432/postgres";  //Connection URL
+    public static   String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
-    public static   TESTCASE testCase = TESTCASE.READ    ; //What is to be tested (SEE TESTCASE ENUM)
+    public static   TESTCASE testCase = TESTCASE.LATENCY    ; //What is to be tested (SEE TESTCASE ENUM)
     public static int numberOfThreads = 10   ;  //Number of parallel threads that will run the test
     public static int commitFrequency = 2   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
     public static int loopSize = 1000  ;          //Any thread will execute how many queries
@@ -162,7 +162,8 @@ public class PerfTest{
         // Initialize the objects
         // Assign the object
         switch (testCase)
-        {
+        {   default:
+                throw new IllegalStateException("Unexpected value: " + testCase);
             case READ :
                 for(int threadNumber = 0; threadNumber<numberOfThreads; threadNumber++)
                 {
@@ -175,8 +176,13 @@ public class PerfTest{
                     test_obj[threadNumber] =  new WriteTest( threadNumber, connection_url, username,  password , loopSize , commitFrequency);
                 }
                 break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + testCase);
+            case LATENCY:
+                for(int threadNumber =0;threadNumber <numberOfThreads; threadNumber++)
+                {
+                    test_obj[threadNumber] = new LatencyTest(threadNumber,connection_url,username,password,loopSize, commitFrequency);
+                }
+                break;
+
         }
         System.out.println("Objects created tests");
 
@@ -431,3 +437,86 @@ class WriteTest extends TestStructure implements  Runnable{
     }
 }
 
+class LatencyTest extends TestStructure implements  Runnable{
+    public LatencyTest(int index, String connection_url, String username, String password, int loopSize, int commitFrequency) {
+        super(index, connection_url, username, password, loopSize, commitFrequency);
+    }
+
+    public long TestExtendedQuery() {
+
+        long start = System.currentTimeMillis() ;
+
+        PreparedStatement preparedStatement_Latency = null ;
+
+        /*  Prepare the prepareStatements */
+        try{
+            preparedStatement_Latency =conn.prepareStatement("SELECT 1");
+        }catch(Exception e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        if(this.commit_frequency >  1 )
+        {
+            try {
+                conn.commit();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for(int times=0;times<loopSize;times++)
+        {
+            try{
+                ResultSet rs2 = preparedStatement_Latency.executeQuery();
+
+                if(!rs2.next())
+                {
+                    System.out.println("Expecting a result but not getting one");
+                    System.exit(1);
+                }
+
+            }catch(SQLException e)
+            {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            if(this.commit_frequency >  1 && times%commit_frequency==0)
+            {
+                try {
+                    conn.commit();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+        if(this.commit_frequency >  1 )
+        {
+            try {
+                conn.commit();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try{
+            conn.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        long end = System.currentTimeMillis() ;
+        this.timeTaken = end - start ;
+        return  1;
+    }
+    @Override
+    public void run() {
+        TestExtendedQuery();
+    }
+}
