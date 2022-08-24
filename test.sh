@@ -30,9 +30,9 @@ do
           mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="$PgBouncerConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
 
         #PgBpouncer
-        echo "--------------------Testing for Yugabyte------------------"
-          sleep 2 #  Sleep for few seconds
-          mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="$YUGABYTEConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
+        #echo "--------------------Testing for Yugabyte------------------"
+        #  sleep 2 #  Sleep for few seconds
+        #  mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="$YUGABYTEConnectionURL $UserName $Password $testname $numberThreads $CommitFrequency $LoopSize"
 
   echo "---------------------------------------------------"
   done
