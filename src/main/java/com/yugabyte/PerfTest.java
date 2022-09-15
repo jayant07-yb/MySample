@@ -229,11 +229,11 @@ abstract class TestStructure {
     /*  Test Result Parameters */
     public volatile long timeTaken = 0;
 
-    /*  Test Parameters */
-    public volatile int loopSize;
-    public volatile String  connection_url ;
-    public volatile Connection conn = null ;
-    public volatile int commit_frequency;
+    /*  Test Parameters */ /* Turn to private */
+    public final int loopSize;
+    public final String  connection_url ;
+    public Connection conn;     // Issue
+    public final int commit_frequency;
 
     public TestStructure(int index, String connection_url, String username, String password, int loopSize, int commitFrequency) {
         this.index = index;
@@ -242,7 +242,12 @@ abstract class TestStructure {
         this.commit_frequency = commitFrequency;
 
         try{
-            this.conn = DriverManager.getConnection(this.connection_url,username,password);
+            try {
+                this.conn = DriverManager.getConnection(this.connection_url, username, password);
+            }catch (SQLException  e)
+            {
+                throw  new Exception();
+            }
             if(commit_frequency <= 1 )
                 conn.setAutoCommit(true);
             else {
@@ -252,6 +257,7 @@ abstract class TestStructure {
 
         }catch(Exception e)
         {
+
             e.printStackTrace();
         }
     }
@@ -311,6 +317,7 @@ class ReadTest extends TestStructure implements  Runnable{
             }catch(Exception e)
             {
                 e.printStackTrace();
+                // Rollback
                 System.exit(1);
             }
 
@@ -385,7 +392,6 @@ class WriteTest extends TestStructure implements  Runnable{
             }
         }
 
-        long NumberOfRowsInReadQueryOutput =0;
         for(int times=0;times<loopSize;times++)
         {
             long insertID  = times + index*(loopSize+1);

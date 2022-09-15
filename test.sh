@@ -4,7 +4,7 @@ mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dex
 
 #mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="jdbc:postgresql://10.150.4.254:5400/yugabyte yugabyte yugabyte WRITE 100"
 #mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="jdbc:postgresql://10.150.1.213:6432/yugabyte yugabyte yugabyte WRITE 100"
-#mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte yugabyte yugabyte WRITE 500"
+#mvn -q package exec:java -DskipTests -Dexec.mainClass=com.yugabyte.PerfTest -Dexec.args="jdbc:postgresql://10.150.2.81:5433,10.150.1.32:5433,10.150.2.83:5433/yugabyte yugabyte yugabyte WRITE 10"
  #[debug] execute contextualize
 PgBouncerConnectionURL="jdbc:postgresql://10.150.4.254:5400/yugabyte"
 OdysseyConnectionURL="jdbc:postgresql://10.150.1.213:6432/yugabyte"
