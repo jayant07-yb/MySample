@@ -562,7 +562,7 @@ class HashCollisionTest extends  TestStructure implements Runnable{
         {
             long insertID  = times + index*(loopSize+1);
             try{
-                int count = stmt.executeUpdate(String.format("SELECT %d ",insertID));
+                ResultSet rs =  stmt.executeQuery(String.format("SELECT %d ",insertID));
 
             }catch(Exception e)
             {
