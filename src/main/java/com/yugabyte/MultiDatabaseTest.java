@@ -1,11 +1,10 @@
 package com.yugabyte;
 
-import sun.lwawt.macosx.CSystemTray;
 
 public class MultiDatabaseTest {
     public static void main(String[] args){
 
-        String connection_url = "jdbc:postgresql://localhost:6432/";  //Connection URL
+        String connection_url = "jdbc:postgresql://10.150.1.208:5433/";  //Connection URL
         String username = "yugabyte"; //Username
         String password = "yugabyte"; //Password
         int loopSize =1000;

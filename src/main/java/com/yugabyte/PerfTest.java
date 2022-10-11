@@ -12,6 +12,7 @@ enum TESTCASE{
     WRITE,
     PARSE_ERROR,
     LATENCY,
+    HASH_COLLISION,
 
 }
 
@@ -31,13 +32,13 @@ public class PerfTest{
 
     /*  Default Values */
 
-    public static   String connection_url = "jdbc:postgresql://10.150.4.254:5400/yugabyte";  //Connection URL
+    public static   String connection_url = "jdbc:postgresql://10.150.1.213:6432/yugabyte";  //Connection URL
     public static   String username = "yugabyte"; //Username
     private static  String password = "yugabyte"; //Password
-    public static   TESTCASE testCase = TESTCASE.LATENCY    ; //What is to be tested (SEE TESTCASE ENUM)
-    public static int numberOfThreads = 10   ;  //Number of parallel threads that will run the test
-    public static int commitFrequency = 2   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
-    public static int loopSize = 1000  ;          //Any thread will execute how many queries
+    public static   TESTCASE testCase = TESTCASE.HASH_COLLISION    ; //What is to be tested (SEE TESTCASE ENUM)
+    public static int numberOfThreads = 100   ;  //Number of parallel threads that will run the test
+    public static int commitFrequency = 1   ;  //Commit will be called after how many queries (1 for autocommit = false ) , Cannot be 0
+    public static int loopSize = 10000  ;          //Any thread will execute how many queries
 
     public static void reset_db(){
         try{
@@ -182,6 +183,11 @@ public class PerfTest{
                     test_obj[threadNumber] = new LatencyTest(threadNumber,connection_url,username,password,loopSize, commitFrequency);
                 }
                 break;
+            case HASH_COLLISION:
+                for(int threadNumber =0;threadNumber <numberOfThreads; threadNumber++)
+                {
+                    test_obj[threadNumber] = new HashCollisionTest(threadNumber,connection_url,username,password,loopSize, commitFrequency);
+                }
 
         }
         System.out.println("Objects created tests");
@@ -525,4 +531,81 @@ class LatencyTest extends TestStructure implements  Runnable{
     public void run() {
         TestExtendedQuery();
     }
+}
+
+class HashCollisionTest extends  TestStructure implements Runnable{
+
+    public HashCollisionTest(int threadNumber, String connection_url, String username, String password, int loopSize, int commitFrequency) {
+        super(threadNumber,connection_url,username,password,loopSize,commitFrequency);
+    }
+
+    public long TestExtendedQuery()
+    {
+        long start = System.currentTimeMillis() ;
+        Statement stmt ;
+        try {
+             stmt = conn.createStatement();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(this.commit_frequency >  1 )
+        {
+            try {
+                conn.commit();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        for(int times=0;times<loopSize;times++)
+        {
+            long insertID  = times + index*(loopSize+1);
+            try{
+                int count = stmt.executeUpdate(String.format("INSERT INTO public.test_table VALUES (%d, 'Unnamed Prepared_Statement', %d )",insertID,index));
+
+            }catch(Exception e)
+            {
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            if(this.commit_frequency >  1 && times%commit_frequency==0)
+            {
+                try {
+                    conn.commit();
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+        if(this.commit_frequency >  1 )
+        {
+            try {
+                conn.commit();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        try{
+            conn.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        long end = System.currentTimeMillis() ;
+        this.timeTaken = end - start ;
+        return  1;
+    }
+
+    @Override
+    public void run() {
+        TestExtendedQuery();
+    }
+
 }
